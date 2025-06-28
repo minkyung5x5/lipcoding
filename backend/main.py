@@ -44,6 +44,16 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         )
     
     user_id = payload.get("sub")
+    
+    # Convert string user_id to int since database expects integer
+    try:
+        user_id = int(user_id) if user_id else None
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID in token"
+        )
+    
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(

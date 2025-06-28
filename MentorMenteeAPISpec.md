@@ -6,7 +6,7 @@
 
 ## 1. 인증 (Authentication)
 
-### POST `/signup`: 회원가입
+### POST `/api/signup`: 회원가입
 
 #### **Request Body**
 
@@ -25,7 +25,7 @@
 - `400 Bad request`: 요청 payload 형식이 틀렸을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### POST `/login`: 로그인
+### POST `/api/login`: 로그인
 
 #### **Request Body:**
 
@@ -52,7 +52,7 @@
 
 ## 2. 사용자 정보
 
-### GET `/me`: 내 정보 조회
+### GET `/api/me`: 내 정보 조회
 
 #### **Request Headers:**
 
@@ -94,7 +94,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### GET `/images/:role/:id`: 프로필 이미지
+### GET `/api/images/:role/:id`: 프로필 이미지
 
 #### **Request Headers:**
 
@@ -106,7 +106,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### PUT `/profile`: 프로필 수정
+### PUT `/api/profile`: 프로필 수정
 
 #### **Request Headers:**
 

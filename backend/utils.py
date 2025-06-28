@@ -38,7 +38,13 @@ def create_access_token(data: dict):
 
 def verify_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, 
+            SECRET_KEY, 
+            algorithms=[ALGORITHM],
+            audience="mentor-mentee-users",  # Match the audience set in create_access_token
+            issuer="mentor-mentee-app"       # Match the issuer set in create_access_token
+        )
         return payload
     except JWTError:
         return None

@@ -245,7 +245,3 @@ SO THAT the mentor cannot see my message.
 - 거절 버튼: `id`=`reject`
 
 ### 7. 매칭 요청 목록
-
-- 개별 요청 엘리먼트: `class`=`request`
-- 요청 취소 버튼: `id`=`cancel`
-- 요청 상태 표시: `class`=`status`

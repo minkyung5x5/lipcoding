@@ -176,7 +176,7 @@
 
 ## 3. 멘토 리스트 조회
 
-### GET `/mentors`: 멘토 전체 리스트 조회 (멘티 전용)
+### GET `/api/mentors`: 멘토 전체 리스트 조회 (멘티 전용)
 
 #### **Request Headers:**
 
@@ -237,7 +237,7 @@
 
 ## 4. 멘토 매칭 요청
 
-### POST `/match-requests`: 매칭 요청 보내기 (멘티 전용)
+### POST `/api/match-requests`: 매칭 요청 보내기 (멘티 전용)
 
 #### **Request Headers:**
 
@@ -271,7 +271,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### GET `/match-requests/incoming`: 나에게 들어온 요청 목록 (멘토 전용)
+### GET `/api/match-requests/incoming`: 나에게 들어온 요청 목록 (멘토 전용)
 
 #### **Request Headers:**
 
@@ -317,7 +317,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### GET `/match-requests/outgoing`: 내가 보낸 요청 목록 (멘티 전용)
+### GET `/api/match-requests/outgoing`: 내가 보낸 요청 목록 (멘티 전용)
 
 #### **Request Headers:**
 
@@ -359,7 +359,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### PUT `/match-requests/:id/accept`: 요청 수락 (멘토 전용)
+### PUT `/api/match-requests/:id/accept`: 요청 수락 (멘토 전용)
 
 #### **Request Headers:**
 
@@ -383,7 +383,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### PUT `/match-requests/:id/reject`: 요청 거절 (멘토 전용)
+### PUT `/api/match-requests/:id/reject`: 요청 거절 (멘토 전용)
 
 #### **Request Headers:**
 
@@ -407,7 +407,7 @@
 - `401 Unauthorized`: 인증 실패했을 경우
 - `500 Internal server error`: 처리중 에러가 생겼을 경우
 
-### DELETE `/match-requests/:id`: 요청 삭제/취소 (멘티 전용)
+### DELETE `/api/match-requests/:id`: 요청 삭제/취소 (멘티 전용)
 
 #### **Request Headers:**
 

@@ -17,10 +17,11 @@ export default function SignupPage() {
     setLoading(true);
     try {
       await api.post('/signup', data);
-      toast.success('회원가입이 완료되었습니다!');
+      toast.success('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
       router.push('/login');
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || '회원가입에 실패했습니다.');
+      const errorMessage = error.response?.data?.detail || '회원가입에 실패했습니다.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

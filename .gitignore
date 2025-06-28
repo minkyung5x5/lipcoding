@@ -75,3 +75,21 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+
+# Backup files
+*_new.*
+*_backup.*
+*_old.*
+*.bak
+*.backup
+*.orig
+
+# Editor temporary files
+*~
+.#*
+#*#
+
+# Development artifacts
+.turbo/
+.vercel/
+.cache/

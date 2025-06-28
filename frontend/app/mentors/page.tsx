@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import api from '@/lib/api';
 import { isAuthenticated, getUserFromToken } from '@/lib/auth';
 import { UserInfo, MatchRequestCreate } from '@/types';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import EmptyState from '@/components/EmptyState';
 
 export default function MentorsPage() {
   const router = useRouter();
@@ -50,34 +52,31 @@ export default function MentorsPage() {
 
   const sendMatchRequest = async (mentorId: number) => {
     const message = prompt('멘토에게 보낼 메시지를 입력하세요:');
-    if (!message) return;
+    if (!message || !message.trim()) {
+      toast.error('메시지를 입력해주세요.');
+      return;
+    }
 
     setRequestingMentorId(mentorId);
     try {
       const requestData: MatchRequestCreate = {
         mentorId,
         menteeId: currentUser.user_id,
-        message
+        message: message.trim()
       };
       
       await api.post('/match-requests', requestData);
-      toast.success('매칭 요청을 보냈습니다!');
+      toast.success('매칭 요청을 성공적으로 보냈습니다!');
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || '매칭 요청에 실패했습니다.');
+      const errorMessage = error.response?.data?.detail || '매칭 요청에 실패했습니다.';
+      toast.error(errorMessage);
     } finally {
       setRequestingMentorId(null);
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">멘토 목록을 불러오는 중...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="멘토 목록을 불러오는 중..." fullScreen />;
   }
 
   return (
@@ -135,23 +134,27 @@ export default function MentorsPage() {
 
         {/* 멘토 목록 */}
         {mentors.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-gray-400 text-3xl">👨‍🏫</span>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">멘토를 찾을 수 없습니다</h3>
-            <p className="text-gray-600">다른 검색 조건을 시도해보세요.</p>
-          </div>
+          <EmptyState
+            icon="👨‍🏫"
+            title="멘토를 찾을 수 없습니다"
+            description="다른 검색 조건을 시도해보세요."
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {mentors.map((mentor) => (
               <div key={mentor.id} className="card p-6 hover:shadow-xl transition-all duration-300">
                 <div className="text-center mb-6">
-                  <img
-                    src={mentor.profile.imageUrl || 'https://placehold.co/500x500.jpg?text=MENTOR'}
-                    alt={mentor.profile.name}
-                    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100"
-                  />
+                  <div className="relative">
+                    <img
+                      src={mentor.profile.imageUrl || '/api/placeholder/120/120'}
+                      alt={mentor.profile.name}
+                      className="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-md"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/120x120/e5e7eb/6b7280?text=' + encodeURIComponent(mentor.profile.name.charAt(0));
+                      }}
+                    />
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
+                  </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-1">{mentor.profile.name}</h3>
                   <p className="text-blue-600 font-medium text-sm">멘토</p>
                 </div>

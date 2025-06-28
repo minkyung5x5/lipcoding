@@ -6,6 +6,9 @@ import toast from 'react-hot-toast';
 import api from '@/lib/api';
 import { isAuthenticated, getUserFromToken } from '@/lib/auth';
 import { MatchRequestInfo } from '@/types';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import EmptyState from '@/components/EmptyState';
+import StatusBadge from '@/components/StatusBadge';
 
 export default function RequestsPage() {
   const router = useRouter();
@@ -64,7 +67,8 @@ export default function RequestsPage() {
   };
 
   const handleCancel = async (requestId: number) => {
-    if (!confirm('정말로 요청을 취소하시겠습니까?')) return;
+    const confirmMessage = '정말로 요청을 취소하시겠습니까?\n취소된 요청은 복구할 수 없습니다.';
+    if (!confirm(confirmMessage)) return;
     
     setActionLoading(requestId);
     try {
@@ -72,72 +76,30 @@ export default function RequestsPage() {
       toast.success('요청을 취소했습니다.');
       fetchRequests(currentUser);
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || '요청 취소에 실패했습니다.');
+      const errorMessage = error.response?.data?.detail || '요청 취소에 실패했습니다.';
+      toast.error(errorMessage);
     } finally {
       setActionLoading(null);
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending': return '대기중';
-      case 'accepted': return '수락됨';
-      case 'rejected': return '거절됨';
-      case 'cancelled': return '취소됨';
-      default: return status;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'accepted': return 'bg-green-100 text-green-800 border-green-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-      case 'cancelled': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
-      case 'accepted':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        );
-      case 'rejected':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        );
-      case 'cancelled':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636" />
-          </svg>
-        );
-      default:
-        return null;
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    try {
+      return new Date(dateString).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '';
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">요청 목록을 불러오는 중...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="요청 목록을 불러오는 중..." fullScreen />;
   }
 
   return (
@@ -157,27 +119,17 @@ export default function RequestsPage() {
 
         {/* 요청 목록 */}
         {requests.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-gray-400 text-3xl">📝</span>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {currentUser?.role === 'mentor' ? '받은 요청이 없습니다' : '보낸 요청이 없습니다'}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {currentUser?.role === 'mentor' 
-                ? '멘티들로부터 요청이 오면 여기에 표시됩니다.' 
-                : '멘토에게 요청을 보내보세요.'}
-            </p>
-            {currentUser?.role === 'mentee' && (
-              <button
-                onClick={() => router.push('/mentors')}
-                className="btn-primary px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
-              >
-                멘토 찾아보기
-              </button>
-            )}
-          </div>
+          <EmptyState
+            icon="📝"
+            title={currentUser?.role === 'mentor' ? '받은 요청이 없습니다' : '보낸 요청이 없습니다'}
+            description={currentUser?.role === 'mentor' 
+              ? '멘티들로부터 요청이 오면 여기에 표시됩니다.' 
+              : '멘토에게 요청을 보내보세요.'}
+            actionButton={currentUser?.role === 'mentee' ? {
+              text: '멘토 찾아보기',
+              onClick: () => router.push('/mentors')
+            } : undefined}
+          />
         ) : (
           <div className="space-y-6">
             {requests.map((request) => (
@@ -190,16 +142,19 @@ export default function RequestsPage() {
                           ? `멘티 ID: ${request.menteeId}` 
                           : `멘토 ID: ${request.mentorId}`}
                       </h3>
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
-                        {getStatusIcon(request.status)}
-                        <span className="ml-1">{getStatusText(request.status)}</span>
-                      </span>
+                      <StatusBadge status={request.status} />
                     </div>
+
+                    {request.createdAt && (
+                      <p className="text-sm text-gray-500 mb-3">
+                        요청일: {formatDate(request.createdAt)}
+                      </p>
+                    )}
                     
                     {request.message && (
                       <div className="mb-4">
                         <h4 className="text-sm font-semibold text-gray-700 mb-2">메시지</h4>
-                        <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{request.message}</p>
+                        <p className="text-gray-600 bg-gray-50 p-3 rounded-lg border-l-4 border-blue-200">{request.message}</p>
                       </div>
                     )}
                   </div>

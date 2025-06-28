@@ -47,4 +47,6 @@ export interface MatchRequestInfo {
   menteeId: number;
   message?: string;
   status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
+  createdAt?: string;
+  updatedAt?: string;
 }
